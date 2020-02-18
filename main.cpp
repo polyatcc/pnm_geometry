@@ -1,4 +1,3 @@
-#include <iostream>
 #include <string>
 #include <stdlib.h>
 
@@ -12,10 +11,25 @@ void swap(unsigned char &fir, unsigned char &sec) {
     fir = t;
 }
 
-int main(int argc, char * argv[]) {
-
-    FILE * pFile;
+void writing(const char *s, int a, int widht, int height, int maxcol, unsigned char* m) {        //argv[2]
     FILE * copyFile;
+    copyFile = fopen(s, "wb");
+    fprintf(copyFile, "P%i\n%i %i\n%i\n", a, widht, height, maxcol);
+    fwrite(m, sizeof(unsigned char), widht * height, copyFile);
+    free(m);
+    fclose(copyFile);
+}
+void writing1(const char *s, int a, int widht, int height, int maxcol, unsigned char* m) {        //argv[2]
+    FILE * copyFile;
+    copyFile = fopen(s, "wb");
+    fprintf(copyFile, "P%i\n%i %i\n%i\n", a, widht, height, maxcol);
+    fwrite(m, sizeof(unsigned char), 3 * widht * height, copyFile);
+    free(m);
+    fclose(copyFile);
+}
+
+int main(int argc, char * argv[]) {
+    FILE * pFile;
     pFile = fopen(argv[1], "rb");
     if (pFile == NULL) {   //не удалось открыть файл
         printf("the file was not found \n");
@@ -27,22 +41,19 @@ int main(int argc, char * argv[]) {
         fclose(pFile);
         return 0;
     }
+
     if (a == 5) {
         unsigned char * k;
         k = (unsigned char*) malloc (sizeof(unsigned char) * height * widht);
         if (k != NULL) {
             fread(k, sizeof(unsigned char), widht * height, pFile);
-            copyFile = fopen(argv[2], "wb");
-
             num = stoi(argv[3]);
             switch (num) {
                 case 0:
                     for (int i = 0 ; i < (widht * height); ++i) {
                         k[i] = 255 - k[i];
                     }
-                    fprintf(copyFile, "P%i\n%i %i\n%i\n", a, widht, height, maxcol);
-                    fwrite(k, sizeof(unsigned char), widht * height, copyFile);
-                    free(k);
+                    writing(argv[2], a, widht, height, maxcol, k);
                     break;
                 case 2:
                     for (int i = 0; i < height / 2; ++i) {
@@ -50,9 +61,7 @@ int main(int argc, char * argv[]) {
                             swap(k[i * widht + j ], k[(height - i - 1) * widht + j]);
                         }
                     }
-                    fprintf(copyFile, "P%i\n%i %i\n%i\n", a, widht, height, maxcol);
-                    fwrite(k, sizeof(unsigned char), widht * height, copyFile);
-                    free(k);
+                    writing(argv[2], a, widht, height, maxcol, k);
                     break;
                 case 1:
                     for (int i = 0; i < height; ++i) {
@@ -60,9 +69,7 @@ int main(int argc, char * argv[]) {
                             swap(k[ i * widht + j], k[(i + 1) * widht - j - 1]);
                         }
                     }
-                    fprintf(copyFile, "P%i\n%i %i\n%i\n", a, widht, height, maxcol);
-                    fwrite(k, sizeof(unsigned char), widht * height, copyFile);
-                    free(k);
+                    writing(argv[2], a, widht, height, maxcol, k);
                     break;
                 case 3:
                     unsigned char * k1;
@@ -72,9 +79,7 @@ int main(int argc, char * argv[]) {
                             k1[j * height + height - i - 1] = k[i * widht + j];
                         }
                     }
-                    fprintf(copyFile, "P%i\n%i %i\n%i\n", a, height, widht, maxcol);
-                    fwrite(k1, sizeof(unsigned char), height * widht, copyFile);
-                    free(k1);
+                    writing(argv[2], a, height, widht, maxcol, k1);
                     free(k);
                     break;
                 case 4:
@@ -85,15 +90,12 @@ int main(int argc, char * argv[]) {
                             k2[(widht - j - 1) * height + i] = k[i * widht + j];
                         }
                     }
-                    fprintf(copyFile, "P%i\n%i %i\n%i\n", a, height, widht, maxcol);
-                    fwrite(k2, sizeof(unsigned char), height * widht, copyFile);
-                    free(k1);
+                    writing(argv[2], a, height, widht, maxcol, k2);
                     free(k);
                     break;
                 default:
                     printf("unavailable action");
                     fclose(pFile);
-                    fclose(copyFile);
                     free(k);
                     return 0;
             }
@@ -109,16 +111,13 @@ int main(int argc, char * argv[]) {
         k = (unsigned char *) malloc(sizeof(unsigned char) * 3 * height * widht);
         if (k != NULL) {
             fread(k, sizeof(unsigned char), 3 * widht * height, pFile);
-            copyFile = fopen(argv[2], "wb");
             num = stoi(argv[3]);
             switch (num) {
                 case 0:
-                    fprintf(copyFile, "P%i\n%i %i\n%i\n", a, widht, height, maxcol);
                     for (int i = 0; i < (3 *widht * height); ++i) {
                         k[i] = 255 - k[i];
                     }
-                    fwrite(k, sizeof(unsigned char), 3 * widht * height, copyFile);
-                    free(k);
+                    writing1(argv[2], a, widht, height, maxcol, k);
                     break;
                 case 2:
                     for (int i = 0; i < height / 2; ++i) {
@@ -128,9 +127,7 @@ int main(int argc, char * argv[]) {
                             swap(k[i * 3 * widht + j * 3 + 2], k[(height - i - 1) * 3 * widht + j * 3 + 2]);
                         }
                     }
-                    fprintf(copyFile, "P%i\n%i %i\n%i\n", a, widht, height, maxcol);
-                    fwrite(k, sizeof(unsigned char), 3 * widht * height, copyFile);
-                    free(k);
+                    writing1(argv[2], a, widht, height, maxcol, k);
                     break;
                 case 1:
                     for (int i = 0; i < height; ++i) {
@@ -140,9 +137,7 @@ int main(int argc, char * argv[]) {
                             swap(k[i * 3 * widht + j * 3 + 2], k[(i + 1) * 3 * widht - (j - 1) * 3 + 2]);
                         }
                     }
-                    fprintf(copyFile, "P%i\n%i %i\n%i\n", a, widht, height, maxcol);
-                    fwrite(k, sizeof(unsigned char), 3 * widht * height, copyFile);
-                    free(k);
+                    writing1(argv[2], a, widht, height, maxcol, k);
                     break;
                 case 3:
                     unsigned char * k1;
@@ -154,9 +149,7 @@ int main(int argc, char * argv[]) {
                             k1[j * height * 3 + height * 3 - i * 3 - 3 + 2] = k[i * widht * 3 + (j * 3 + 2)];
                         }
                     }
-                    fprintf(copyFile, "P%i\n%i %i\n%i\n", a, height, widht, maxcol);
-                    fwrite(k1, sizeof(unsigned char), 3 * height * widht, copyFile);
-                    free(k1);
+                    writing1(argv[2], a, height, widht, maxcol, k1);
                     free(k);
                     break;
                 case 4:
@@ -169,15 +162,12 @@ int main(int argc, char * argv[]) {
                             k2[(widht - j - 1) * height * 3 + i * 3 + 2] = k[i * widht * 3 + (j * 3 + 2)];
                         }
                     }
-                    fprintf(copyFile, "P%i\n%i %i\n%i\n", a, height, widht, maxcol);
-                    fwrite(k2, sizeof(unsigned char), 3 * height * widht, copyFile);
-                    free(k1);
+                    writing1(argv[2], a, height, widht, maxcol, k2);
                     free(k);
                     break;
                 default:
                     printf("unavailable action");
                     fclose(pFile);
-                    fclose(copyFile);
                     free(k);
                     return 0;
             }
@@ -191,6 +181,5 @@ int main(int argc, char * argv[]) {
          }
     }
     fclose(pFile);
-    fclose(copyFile);
     return 0;
 }
