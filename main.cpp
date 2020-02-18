@@ -44,7 +44,7 @@ int main(int argc, char * argv[]) {
                     fwrite(k, sizeof(unsigned char), widht * height, copyFile);
                     free(k);
                     break;
-                case 1:
+                case 2:
                     for (int i = 0; i < height / 2; ++i) {
                         for (int j = 0; j < widht; ++j) {
                             swap(k[i * widht + j ], k[(height - i - 1) * widht + j]);
@@ -54,7 +54,7 @@ int main(int argc, char * argv[]) {
                     fwrite(k, sizeof(unsigned char), widht * height, copyFile);
                     free(k);
                     break;
-                case 2:
+                case 1:
                     for (int i = 0; i < height; ++i) {
                         for (int j = 0; j < widht / 2; ++j) {
                             swap(k[ i * widht + j], k[(i + 1) * widht - j - 1]);
@@ -120,25 +120,24 @@ int main(int argc, char * argv[]) {
                     fwrite(k, sizeof(unsigned char), 3 * widht * height, copyFile);
                     free(k);
                     break;
-                case 1:
+                case 2:
                     for (int i = 0; i < height / 2; ++i) {
-                        for (int j = 0; j < widht * 3; j += 1) {
-                            swap(k[i * 3 * widht + j ], k[(height - i - 1) * 3 * widht + j]);
-                            swap(k[i * 3 * widht + j + 1], k[(height - i - 1) * 3 *widht + j + 1]);
-                            swap(k[i * 3 * widht + j + 2], k[(height - i - 1) * 3 * widht + j + 2]);
+                        for (int j = 0; j < widht; j++) {
+                            swap(k[i * 3 * widht + j * 3], k[(height - i - 1) * 3 * widht + j * 3]);
+                            swap(k[i * 3 * widht + j * 3 + 1], k[(height - i - 1) * 3 * widht + j * 3 + 1]);
+                            swap(k[i * 3 * widht + j * 3 + 2], k[(height - i - 1) * 3 * widht + j * 3 + 2]);
                         }
                     }
                     fprintf(copyFile, "P%i\n%i %i\n%i\n", a, widht, height, maxcol);
                     fwrite(k, sizeof(unsigned char), 3 * widht * height, copyFile);
                     free(k);
                     break;
-                case 2:
+                case 1:
                     for (int i = 0; i < height; ++i) {
                         for (int j = 0; j < widht / 2; j += 1) {
-                            int m = j % widht;
-                            swap(k[i * 3 * widht + j * 3], k[(i + 1) * 3 * widht - m * 3]);
-                            swap(k[i * 3 * widht + j * 3 + 1], k[(i + 1) * 3 * widht - m * 3 + 1]);
-                            swap(k[i * 3 * widht + j * 3 + 2], k[(i + 1) * 3 * widht - m * 3 + 2]);
+                            swap(k[i * 3 * widht + j * 3], k[(i + 1) * 3 * widht - (j - 1) * 3]);
+                            swap(k[i * 3 * widht + j * 3 + 1], k[(i + 1) * 3 * widht - (j - 1) * 3 + 1]);
+                            swap(k[i * 3 * widht + j * 3 + 2], k[(i + 1) * 3 * widht - (j - 1) * 3 + 2]);
                         }
                     }
                     fprintf(copyFile, "P%i\n%i %i\n%i\n", a, widht, height, maxcol);
@@ -150,9 +149,9 @@ int main(int argc, char * argv[]) {
                     k1 = (unsigned char*) malloc (sizeof(unsigned char) * widht * height * 3);
                     for ( int i = 0; i < height ; ++i) {
                         for (int j = 0; j < widht; j++) {
-                            k1[j * height * 3 + height * 3 - i * 3 - 1] = k[i *  widht * 3 + j * 3 - 1];
-                            k1[j * height * 3 + height * 3 - i * 3] = k[i * widht * 3 + (j * 3)];
-                            k1[j *  height * 3 + height * 3 - i * 3 + 1] = k[i * widht * 3 + (j * 3 + 1)];
+                            k1[j * height * 3 + height * 3 - i * 3 - 3] = k[i *  widht * 3 + j * 3];
+                            k1[j * height * 3 + height * 3 - i * 3 - 3 + 1] = k[i * widht * 3 + (j * 3) + 1];
+                            k1[j * height * 3 + height * 3 - i * 3 - 3 + 2] = k[i * widht * 3 + (j * 3 + 2)];
                         }
                     }
                     fprintf(copyFile, "P%i\n%i %i\n%i\n", a, height, widht, maxcol);
@@ -166,8 +165,8 @@ int main(int argc, char * argv[]) {
                     for (int i = 0; i < height; ++i) {
                         for (int j = 0; j < widht; j++) {
                             k2[(widht - j - 1) * height * 3 + i * 3] = k[i * widht * 3 + j * 3];
-                            k2[(widht - j - 1) * height * 3 + 1 + i * 3] = k[i * widht * 3 + j * 3 + 1];
-                            k2[(widht - j - 1) * height * 3 + 2 + i * 3] = k[i * widht * 3 + (j * 3 + 2)];
+                            k2[(widht - j - 1) * height * 3 + i * 3 + 1] = k[i * widht * 3 + j * 3 + 1];
+                            k2[(widht - j - 1) * height * 3 + i * 3 + 2] = k[i * widht * 3 + (j * 3 + 2)];
                         }
                     }
                     fprintf(copyFile, "P%i\n%i %i\n%i\n", a, height, widht, maxcol);
