@@ -1,5 +1,6 @@
 #include <string>
 #include <stdlib.h>
+#include <iostream>
 
 using namespace std;
 
@@ -11,21 +12,32 @@ void swap(unsigned char &fir, unsigned char &sec) {
     fir = t;
 }
 
-void writing(const char *s, int a, int widht, int height, int maxcol, unsigned char* m) {        //argv[2]
+bool writing(const char *s, int a, int widht, int height, int maxcol, unsigned char* m) {        //argv[2]
     FILE * copyFile;
     copyFile = fopen(s, "wb");
+    if (copyFile == NULL) {   //не удалось открыть файл
+        printf("the output file was not found \n");
+        fclose(copyFile);
+        return false;
+    }
     fprintf(copyFile, "P%i\n%i %i\n%i\n", a, widht, height, maxcol);
     fwrite(m, sizeof(unsigned char), widht * height, copyFile);
     free(m);
     fclose(copyFile);
 }
-void writing1(const char *s, int a, int widht, int height, int maxcol, unsigned char* m) {        //argv[2]
+bool writing1(const char *s, int a, int widht, int height, int maxcol, unsigned char* m) {        //argv[2]
     FILE * copyFile;
     copyFile = fopen(s, "wb");
+    if (copyFile == NULL) {   //не удалось открыть файл
+        printf("the output file was not found \n");
+        fclose(copyFile);
+        return false;
+    }
     fprintf(copyFile, "P%i\n%i %i\n%i\n", a, widht, height, maxcol);
     fwrite(m, sizeof(unsigned char), 3 * widht * height, copyFile);
     fclose(copyFile);
     free(m);
+    return true;
 }
 
 int main(int argc, char * argv[]) {
@@ -43,6 +55,18 @@ int main(int argc, char * argv[]) {
     }
 
     if (a == 5) {
+        int count = 0;
+        int ret = ftell(pFile);
+        while (!feof(pFile)) {
+            getc(pFile);
+            count++;
+        }
+        if (count != height * widht) {
+            printf( "Memory failed");
+            fclose(pFile);
+            return 0;
+        }
+        fseek(pFile, 1, ret);
         unsigned char * k;
         k = (unsigned char*) malloc (sizeof(unsigned char) * height * widht);
         if (k != NULL) {
@@ -58,10 +82,12 @@ int main(int argc, char * argv[]) {
                 case 2:
                     for (int i = 0; i < height / 2; ++i) {
                         for (int j = 0; j < widht; ++j) {
-                            swap(k[i * widht + j ], k[(height - i - 1) * widht + j]);
+                            swap(k[i  * widht + j ], k[(height - i - 1) * widht + j]);
                         }
                     }
-                    writing(argv[2], a, widht, height, maxcol, k);
+                    if (writing(argv[2], a, widht, height, maxcol, k) == 0) {
+                        return 0;
+                    }
                     break;
                 case 1:
                     for (int i = 0; i < height; ++i) {
@@ -69,7 +95,9 @@ int main(int argc, char * argv[]) {
                             swap(k[ i * widht + j], k[(i + 1) * widht - j - 1]);
                         }
                     }
-                    writing(argv[2], a, widht, height, maxcol, k);
+                    if (writing(argv[2], a, widht, height, maxcol, k) == 0) {
+                        return 0;
+                    }
                     break;
                 case 3:
                     unsigned char * k1;
@@ -79,7 +107,9 @@ int main(int argc, char * argv[]) {
                             k1[j * height + height - i - 1] = k[i * widht + j];
                         }
                     }
-                    writing(argv[2], a, height, widht, maxcol, k1);
+                    if (writing(argv[2], a, height, widht, maxcol, k1) == 0) {
+                        return 0;
+                    }
                     free(k);
                     break;
                 case 4:
@@ -90,7 +120,9 @@ int main(int argc, char * argv[]) {
                             k2[(widht - j - 1) * height + i] = k[i * widht + j];
                         }
                     }
-                    writing(argv[2], a, height, widht, maxcol, k2);
+                    if (writing(argv[2], a, height, widht, maxcol, k2) == 0) {
+                        return 0;
+                    }
                     free(k);
                     break;
                 default:
@@ -107,6 +139,19 @@ int main(int argc, char * argv[]) {
             return 0;
         }
     } else {
+        int count = 0;
+        int ret = ftell(pFile);
+        while (!feof(pFile)) {
+            getc(pFile);
+            count++;
+        }
+        if (count - 1 != 3 * height * widht) {
+            
+            printf( "Memory failed");
+            fclose(pFile);
+            return 0;
+        }
+        fseek(pFile, 1, ret);
         unsigned char *k;
         k = (unsigned char *) malloc(sizeof(unsigned char) * 3 * height * widht);
         if (k != NULL) {
@@ -117,7 +162,9 @@ int main(int argc, char * argv[]) {
                     for (int i = 0; i < (3 *widht * height); ++i) {
                         k[i] = 255 - k[i];
                     }
-                    writing1(argv[2], a, widht, height, maxcol, k);
+                    if (writing1(argv[2], a, widht, height, maxcol, k) == 0) {
+                        return 0;
+                    }
                     break;
                 case 2:
                     for (int i = 0; i < height / 2; ++i) {
@@ -127,7 +174,10 @@ int main(int argc, char * argv[]) {
                             swap(k[i * 3 * widht + j * 3 + 2], k[(height - i - 1) * 3 * widht + j * 3 + 2]);
                         }
                     }
-                    writing1(argv[2], a, widht, height, maxcol, k);
+                    if (writing1(argv[2], a, widht, height, maxcol, k) == 0) {
+                        return 0;
+                    }
+
                     break;
                 case 1:
                     for (int i = 0; i < height; ++i) {
@@ -137,7 +187,9 @@ int main(int argc, char * argv[]) {
                             swap(k[i * 3 * widht + j * 3 + 2], k[(i + 1) * 3 * widht - (j + 1) * 3 + 2]);
                         }
                     }
-                    writing1(argv[2], a, widht, height, maxcol, k);
+                    if (writing1(argv[2], a, widht, height, maxcol, k) == 0) {
+                        return 0;
+                    }
                     break;
                 case 3:
                     unsigned char * k1;
@@ -149,7 +201,9 @@ int main(int argc, char * argv[]) {
                             k1[j * height * 3 + height * 3 - i * 3 - 3 + 2] = k[i * widht * 3 + (j * 3 + 2)];
                         }
                     }
-                    writing1(argv[2], a, height, widht, maxcol, k1);
+                    if (writing1(argv[2], a, height, widht, maxcol, k1) == 0) {
+                        return 0;
+                    }
                     free(k);
                     break;
                 case 4:
@@ -162,7 +216,9 @@ int main(int argc, char * argv[]) {
                             k2[(widht - j - 1) * height * 3 + i * 3 + 2] = k[i * widht * 3 + (j * 3 + 2)];
                         }
                     }
-                    writing1(argv[2], a, height, widht, maxcol, k2);
+                    if (writing1(argv[2], a, height, widht, maxcol, k2) == 0) {
+                        return 0;
+                    }
                     free(k);
                     break;
                 default:
