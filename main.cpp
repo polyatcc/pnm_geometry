@@ -24,8 +24,8 @@ void writing1(const char *s, int a, int widht, int height, int maxcol, unsigned 
     copyFile = fopen(s, "wb");
     fprintf(copyFile, "P%i\n%i %i\n%i\n", a, widht, height, maxcol);
     fwrite(m, sizeof(unsigned char), 3 * widht * height, copyFile);
-    free(m);
     fclose(copyFile);
+    free(m);
 }
 
 int main(int argc, char * argv[]) {
@@ -132,9 +132,9 @@ int main(int argc, char * argv[]) {
                 case 1:
                     for (int i = 0; i < height; ++i) {
                         for (int j = 0; j < widht / 2; j += 1) {
-                            swap(k[i * 3 * widht + j * 3], k[(i + 1) * 3 * widht - (j - 1) * 3]);
-                            swap(k[i * 3 * widht + j * 3 + 1], k[(i + 1) * 3 * widht - (j - 1) * 3 + 1]);
-                            swap(k[i * 3 * widht + j * 3 + 2], k[(i + 1) * 3 * widht - (j - 1) * 3 + 2]);
+                            swap(k[i * 3 * widht + j * 3], k[(i + 1) * 3 * widht - (j + 1) * 3]);
+                            swap(k[i * 3 * widht + j * 3 + 1], k[(i + 1) * 3 * widht - (j + 1) * 3 + 1]);
+                            swap(k[i * 3 * widht + j * 3 + 2], k[(i + 1) * 3 * widht - (j + 1) * 3 + 2]);
                         }
                     }
                     writing1(argv[2], a, widht, height, maxcol, k);
